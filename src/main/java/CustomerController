@@ -1,0 +1,48 @@
+package org.jsp.Customer.controller;
+
+import org.jsp.Customer.dao.Customerdao;
+import org.jsp.customermvcapp.dto.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class CustomerController {
+	@Autowired
+	private Customerdao dao;
+
+	@RequestMapping("/open")
+	public String openView(String view) {
+		return view;
+	}
+	@PostMapping(value = "/register")
+	public ModelAndView save(@ModelAttribute Customer c, ModelAndView view) {
+		c= dao.save(c);
+		view.addObject("msg", "user saved with Id:" + c.getId());
+		view.setViewName("print");
+		return view;
+	}
+	@RequestMapping(value = "/update")
+	public ModelAndView updateUser(@ModelAttribute Customer c, ModelAndView view) {
+		dao.update(c);
+		view.addObject("msg", "user updated");
+		view.setViewName("print");
+		return view;
+}
+	@RequestMapping("/delete")
+	public ModelAndView deleteUser(@RequestParam boolean id, ModelAndView view) {
+		boolean deleted = dao.delete(id);
+		view.setViewName("print");
+		if (deleted) {
+			view.addObject("msg", "user deleted");
+			return view;
+		} else {
+			view.addObject("msg", "Cannot deete User as the id is invalid");
+			return view;
+		}	
+	}
+}
